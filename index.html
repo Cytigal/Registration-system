@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>課程報名系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            --tw-ring-color: #3b82f6;
+            box-shadow: 0 0 0 2px var(--tw-ring-color);
+        }
+        .error-message { display: none; color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem; }
+        .is-invalid { border-color: #ef4444; }
+        .is-invalid:focus { --tw-ring-color: #ef4444; }
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none; /* Initially hidden */
+            margin-left: 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div class="container mx-auto max-w-3xl px-4 py-12 sm:py-16">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">[課程名稱]</h1>
+            <p class="mt-3 text-md text-gray-600">感謝您對本課程的興趣！請填寫以下資訊以完成報名。我們期待在課堂上見到您！</p>
+        </header>
+
+        <form id="registrationForm" class="bg-white p-8 sm:p-10 rounded-xl shadow-lg space-y-8" novalidate>
+            <!-- 表單欄位 (與前一版本相同，此處省略以節省篇幅) -->
+            <!-- 課程資訊 -->
+            <fieldset class="border-b border-gray-200 pb-8">
+                <legend class="text-xl font-semibold text-gray-900 mb-4">課程資訊</legend>
+                <div class="space-y-3 text-gray-700">
+                    <p><strong>課程主題：</strong> 專業簡報製作技巧</p>
+                    <p><strong>課程日期：</strong> 2025 年 9 月 20 日 (星期六)</p>
+                    <p><strong>課程時間：</strong> 上午 9:30 - 下午 4:30</p>
+                    <p><strong>課程地點：</strong> Google Meet 線上會議室</p>
+                    <p><strong>課程費用：</strong> <span class="text-blue-600 font-bold">新台幣 $3,500 元/人</span> (含電子教材)</p>
+                </div>
+            </fieldset>
+
+            <!-- 報名者資訊 -->
+            <fieldset class="border-b border-gray-200 pb-8">
+                <legend class="text-xl font-semibold text-gray-900 mb-6">報名者資訊</legend>
+                <div class="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
+                    <div>
+                        <label for="fullName" class="block text-sm font-medium text-gray-700">姓名 <span class="text-red-500">*</span></label>
+                        <input type="text" name="fullName" id="fullName" required class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <p id="fullNameError" class="error-message">請輸入您的姓名</p>
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700">聯絡電話 <span class="text-red-500">*</span></label>
+                        <input type="tel" name="phone" id="phone" required class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                         <p id="phoneError" class="error-message">請輸入您的聯絡電話</p>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="email" class="block text-sm font-medium text-gray-700">電子郵件 <span class="text-red-500">*</span></label>
+                        <input type="email" name="email" id="email" required class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="我們將透過此信箱寄送課前通知">
+                        <p id="emailError" class="error-message">請輸入有效的電子郵件地址</p>
+                    </div>
+                    <div>
+                        <label for="company" class="block text-sm font-medium text-gray-700">服務單位 / 學校科系</label>
+                        <input type="text" name="company" id="company" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                     <div>
+                        <label for="jobTitle" class="block text-sm font-medium text-gray-700">職稱</label>
+                        <input type="text" name="jobTitle" id="jobTitle" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+            </fieldset>
+            
+            <!-- 課程相關問題 -->
+            <fieldset class="border-b border-gray-200 pb-8">
+                <legend class="text-xl font-semibold text-gray-900 mb-4">課程相關問題</legend>
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">您是從何處得知本課程資訊？</label>
+                        <select id="source" name="source" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option>Facebook / Instagram</option>
+                            <option>Google 搜尋</option>
+                            <option>親友推薦</option>
+                            <option>公司/學校佈告</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+                    <div>
+                         <label for="learningGoal" class="block text-sm font-medium text-gray-700">您最希望透過這次課程學到什麼？</label>
+                         <textarea id="learningGoal" name="learningGoal" rows="3" class="form-textarea mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- 帳務資訊 -->
+            <fieldset>
+                <legend class="text-xl font-semibold text-gray-900 mb-4">帳務資訊</legend>
+                <div class="bg-gray-100 p-4 rounded-lg text-sm text-gray-800 mb-6">
+                    <p><strong>匯款資訊：</strong> [您的銀行名稱] [分行] (代碼: 007)</p>
+                    <p><strong>匯款帳號：</strong> 123-456-789012</p>
+                     <p><strong>戶名：</strong> [您的帳戶名稱]</p>
+                </div>
+                <div>
+                     <label for="paymentInfo" class="block text-sm font-medium text-gray-700">匯款帳號後五碼 <span class="text-red-500">*</span></label>
+                     <input type="text" name="paymentInfo" id="paymentInfo" required maxlength="5" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="為方便對帳，請務必填寫">
+                     <p id="paymentInfoError" class="error-message">請輸入匯款帳號後五碼</p>
+                </div>
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">是否需要開立三聯式發票？</label>
+                    <div class="flex items-center space-x-6">
+                        <div class="flex items-center">
+                            <input id="invoiceNo" name="invoiceType" type="radio" value="no" checked class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <label for="invoiceNo" class="ml-2 block text-sm text-gray-900">否，個人即可</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="invoiceYes" name="invoiceType" type="radio" value="yes" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <label for="invoiceYes" class="ml-2 block text-sm text-gray-900">是，我需要三聯式發票</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="invoiceFields" class="mt-4 grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2 hidden">
+                     <div>
+                        <label for="invoiceTitle" class="block text-sm font-medium text-gray-700">發票抬頭</label>
+                        <input type="text" name="invoiceTitle" id="invoiceTitle" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <p id="invoiceTitleError" class="error-message">請輸入發票抬頭</p>
+                    </div>
+                     <div>
+                        <label for="taxId" class="block text-sm font-medium text-gray-700">統一編號</label>
+                        <input type="text" name="taxId" id="taxId" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <p id="taxIdError" class="error-message">請輸入統一編號</p>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- 注意事項與提交 -->
+            <div>
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="terms" name="terms" type="checkbox" required class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="terms" class="font-medium text-gray-700">我已閱讀並同意 <a href="#" class="text-blue-600 hover:text-blue-500">注意事項與條款</a> <span class="text-red-500">*</span></label>
+                        <p id="termsError" class="error-message">您必須同意注意事項與條款</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-5">
+                <button type="submit" id="submitButton" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:bg-blue-300">
+                    <span id="buttonText">確認送出報名</span>
+                    <div id="buttonLoader" class="loader"></div>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 成功/失敗提示 Modal -->
+    <div id="responseModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div id="modalIconContainer" class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <!-- Icon will be inserted here by JS -->
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle"></h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500" id="modalMessage"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="closeModal" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        關閉
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- 變數定義 ---
+    const form = document.getElementById('registrationForm');
+    const submitButton = document.getElementById('submitButton');
+    const buttonText = document.getElementById('buttonText');
+    const buttonLoader = document.getElementById('buttonLoader');
+    const invoiceYesRadio = document.getElementById('invoiceYes');
+    const invoiceNoRadio = document.getElementById('invoiceNo');
+    const invoiceFields = document.getElementById('invoiceFields');
+    
+    // Google Apps Script 部署後的網址
+    // !重要! 請將 'YOUR_WEB_APP_URL' 替換成您在第三步複製的網址
+    const SCRIPT_URL = https://script.google.com/macros/s/AKfycbzazvuILZDFKZUSLtAFUMYyTX3GdaBnmHmdLCvs0JuY0UPlIPq9RvStW4g98HTy4DxOkg/exec;
+
+    // --- Modal 相關 ---
+    const responseModal = document.getElementById('responseModal');
+    const closeModalButton = document.getElementById('closeModal');
+    const modalIconContainer = document.getElementById('modalIconContainer');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const successIcon = `<svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+    const errorIcon = `<svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+
+    function showModal(isSuccess, message) {
+        if (isSuccess) {
+            modalIconContainer.innerHTML = successIcon;
+            modalIconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10';
+            modalTitle.textContent = '報名成功！';
+            modalMessage.textContent = '我們已經收到您的報名資訊。相關的課前通知與會議連結將在 3 個工作天內寄至您的電子信箱，敬請留意。';
+        } else {
+            modalIconContainer.innerHTML = errorIcon;
+            modalIconContainer.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10';
+            modalTitle.textContent = '報名失敗';
+            modalMessage.textContent = message || '發生未知的錯誤，請稍後再試或直接與我們聯繫。';
+        }
+        responseModal.classList.remove('hidden');
+    }
+
+    // --- 表單驗證邏輯 (與前一版相同) ---
+    const fieldsToValidate = { 'fullName': 'fullNameError', 'phone': 'phoneError', 'email': 'emailError', 'paymentInfo': 'paymentInfoError', 'terms': 'termsError' };
+    const invoiceFieldsToValidate = { 'invoiceTitle': 'invoiceTitleError', 'taxId': 'taxIdError' };
+    function showError(fieldId, errorId) { const field = document.getElementById(fieldId); const error = document.getElementById(errorId); if (field && error) { field.classList.add('is-invalid'); error.style.display = 'block'; } }
+    function hideError(fieldId, errorId) { const field = document.getElementById(fieldId); const error = document.getElementById(errorId); if (field && error) { field.classList.remove('is-invalid'); error.style.display = 'none'; } }
+    function validateEmail(email) { const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; return re.test(String(email).toLowerCase()); }
+    function validateForm() {
+        let isValid = true;
+        Object.entries(fieldsToValidate).forEach(([fieldId, errorId]) => hideError(fieldId, errorId));
+        Object.entries(invoiceFieldsToValidate).forEach(([fieldId, errorId]) => hideError(fieldId, errorId));
+        Object.entries(fieldsToValidate).forEach(([fieldId, errorId]) => {
+            const field = document.getElementById(fieldId); let fieldValid = true;
+            if (field.type === 'checkbox') { if (!field.checked) fieldValid = false; } else { if (!field.value.trim()) fieldValid = false; }
+            if (fieldId === 'email' && field.value.trim() && !validateEmail(field.value.trim())) { fieldValid = false; }
+            if (!fieldValid) { showError(fieldId, errorId); isValid = false; }
+        });
+        if (invoiceYesRadio.checked) {
+            Object.entries(invoiceFieldsToValidate).forEach(([fieldId, errorId]) => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) { showError(fieldId, errorId); isValid = false; }
+            });
+        }
+        return isValid;
+    }
+
+    // --- 事件監聽 ---
+    invoiceYesRadio.addEventListener('change', () => { if (invoiceYesRadio.checked) invoiceFields.classList.remove('hidden'); });
+    invoiceNoRadio.addEventListener('change', () => { if (invoiceNoRadio.checked) { invoiceFields.classList.add('hidden'); Object.entries(invoiceFieldsToValidate).forEach(([fieldId, errorId]) => hideError(fieldId, errorId)); } });
+    closeModalButton.addEventListener('click', () => { responseModal.classList.add('hidden'); });
+    responseModal.addEventListener('click', (event) => { if (event.target === responseModal) responseModal.classList.add('hidden'); });
+
+    // --- 表單提交 ---
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (!validateForm()) {
+            console.log('表單驗證失敗');
+            return;
+        }
+
+        // 檢查 SCRIPT_URL 是否已設定
+        if (SCRIPT_URL === 'YOUR_WEB_APP_URL') {
+            showModal(false, '系統設定錯誤：尚未設定後端資料接收網址。');
+            return;
+        }
+
+        // 禁用按鈕並顯示讀取中動畫
+        submitButton.disabled = true;
+        buttonText.style.display = 'none';
+        buttonLoader.style.display = 'block';
+
+        // 收集表單資料
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        // 組合發票資訊
+        if (data.invoiceType === 'yes') {
+            data.invoiceInfo = `抬頭: ${data.invoiceTitle}, 統編: ${data.taxId}`;
+        } else {
+            data.invoiceInfo = '個人';
+        }
+
+        // 發送到 Google Apps Script
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors', // 必須為 cors
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8', // Apps Script 接收純文字
+            },
+            body: JSON.stringify(data) // 將 JS 物件轉為 JSON 字串
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.result === 'success') {
+                showModal(true);
+                form.reset();
+                invoiceFields.classList.add('hidden');
+            } else {
+                throw new Error(response.error || '未知的後端錯誤');
+            }
+        })
+        .catch(error => {
+            console.error('Error!', error);
+            showModal(false, `提交失敗，請檢查您的網路連線或稍後再試。錯誤詳情: ${error.message}`);
+        })
+        .finally(() => {
+            // 恢復按鈕狀態
+            submitButton.disabled = false;
+            buttonText.style.display = 'inline';
+            buttonLoader.style.display = 'none';
+        });
+    });
+});
+</script>
+
+</body>
+</html>
